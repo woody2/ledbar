@@ -29,15 +29,7 @@ int main(int argc, char **argv) {
 \********************************************/
 
 void initGlobals()
-{
-	blankPixel.red = 0;
-	blankPixel.green = 0;
-	blankPixel.blue = 0;
-	redPixel = greenPixel = bluePixel = blankPixel;
-	redPixel.red = 255;
-	greenPixel.green = 255;
-	bluePixel.blue = 255;
-	
+{	
 	enum eStates mState = kStateInvalid;
 	screenWidth = 128;
 	screenHeight = 8;
@@ -189,6 +181,10 @@ void initImageElements()
 	imgA = (struct image_element*)malloc(sizeof(struct 
 image_element));
 
+	struct sPixel greenPixel;
+	greenPixel.red = 0;
+	greenPixel.green = 255;
+	greenPixel.blue = 0;
 
 	imgB = (struct image_element*)malloc(sizeof(struct image_element));
 	imgB->colors = (struct sPixel*)malloc(sizeof(struct sPixel));

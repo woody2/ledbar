@@ -43,16 +43,6 @@ enum eStates {
 	kStateExit
 };
 
-/********************************************\
-*  Structs									 *
-\********************************************/
-
-
-struct sPixel blankPixel;
-struct sPixel redPixel;
-struct sPixel greenPixel;
-struct sPixel bluePixel;
-
 
 /********************************************\
 *  Forward Declarations                      *

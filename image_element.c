@@ -1,7 +1,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-//#include <stdio.h>
 #include <fcntl.h>
 #include <string.h>
 #include "image_element.h"
@@ -17,6 +16,12 @@ void init_test(struct image_element *img)
 	img->data = (void*)malloc(sizeof(short));
 	short *testCounter = (short*)img->data;
 	*testCounter = 0;
+
+	struct sPixel blankPixel;
+
+	blankPixel.red = 0;
+	blankPixel.green = 0;
+	blankPixel.blue = 0;
 
 	for (i = 0; i < screenWidth*screenHeight; i++)
 	{
@@ -57,6 +62,10 @@ void init_artnet( struct image_element *img)
         img->PixelMatrix = (struct sPixel*)malloc(sizeof(struct sPixel)*screenWidth*screenHeight);
         img->data = (void*)malloc(sizeof(struct artnetData*));
         
+	struct sPixel blankPixel;
+	blankPixel.red = 0;
+	blankPixel.green = 0;
+	blankPixel.blue = 0;
 
         for (i = 0; i < screenWidth*screenHeight; i++)
         {
