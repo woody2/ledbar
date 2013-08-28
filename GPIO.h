@@ -1,4 +1,4 @@
-#include memory.h
+#include "memory.h"
  
 #define GPIO_BASE       (BCM2708_BASE + 0x200000)       // 0x7e200000
 
@@ -43,3 +43,10 @@ enum eGPIOPinsUsed {
 	kUART1RTSPin          = 17
 };
 
+volatile unsigned long *mGPIO;
+
+int initGPIO();
+
+void gpioBit ( char bit, char val );
+
+volatile unsigned long *mapMem ( unsigned long armAddr, unsigned int memSize );

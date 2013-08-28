@@ -1,4 +1,4 @@
-#include memory.h
+#include "memory.h"
 
 #define AUX_BASE        (BCM2708_BASE + 0x215000)       // 0x7e215000
 
@@ -57,3 +57,9 @@ enum eUART1ExtraCtrlMask {
 	kUART1TxEnable        = 0b00000010,
 	kUART1RxEnable        = 0b00000001
 };
+
+volatile unsigned long *mAux;
+
+int initUART();
+
+void sendByte ( unsigned char byte );
