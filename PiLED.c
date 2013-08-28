@@ -16,93 +16,23 @@
 \********************************************/
 
 int main(int argc, char **argv) {
-	mState = kStateUninitialised;
-	while ( mState != kStateExit ) {
-		//perror("main");
-		processState();
-		changeState();
-	}
-}
 
-/********************************************\
-* processState                               *
-* Just do the state, don't try and change    *
-* the state.                                 *
-\********************************************/
+	perror("init started");
+	initRealTime();
+	initGPIO();
+	initUART();
+	initTimer();
+	perror("init complete");
+	sendByte(RESET_BYTE);
 
-void initGlobals()
-{	
-	enum eStates mState = kStateInvalid;
-	screenWidth = 128;
-	screenHeight = 8;
-}
-
-void processState() {
-	switch ( mState ) {
-
-	case kStateUninitialised:
-		perror("init started");
-		initRealTime();
-		initGPIO();
-		initUART();
-		initTimer();
-		initGlobals();
-		perror("init complete");
-		sendByte(1);
+	while ( 1 ) {
 		mNextFrameTime = *(mTimer + kTimerCLO) + 40000;
-		perror("EndOfInit");
-		break;
-
-	case kStateSendFrame:
 		gpioBit ( kGPIODirectionPort, kFromPi );
 		sendFrame();
-		//sendByte(0);
-		break;
-
-	case kStateSentFrame:
-		//gpioBit ( kGPIODirectionPort, kToPi );
-		//perror("sent");
-		mNextFrameTime = *(mTimer + kTimerCLO) + 40000;
-		break;
-	}
-}
-
-/********************************************\
-* changeState                                *
-* Detect if the state needs to change, or    *
-* simply transition from one state to        *
-* another.  Don't process the state.         *
-\********************************************/
-
-void changeState() {
-	switch ( mState ) {
-
-	case kStateUninitialised:
-		mState = kStateSendFrame;
-		break;
-
-
-	case kStateSendFrame:
-		mState = kStateSendingFrame;
-		break;
-
-	case kStateSendingFrame:
-		// Finished sending?
-		if ( ( *(mAux + kAuxMiniUartLineStat) & kUART1XmitIdle ) ) {
-			mState = kStateSentFrame;
-		}
-		break;
-
-	case kStateSentFrame:
-		mState = kStateIdle;
-		break;
-
-	case kStateIdle:
-		// Time to send next Frame?
-		if ( *(mTimer + kTimerCLO) > mNextFrameTime ) {
-			mState = kStateSendFrame;
-		}
-		break;
+		// wait for sending to complete
+		while ( !( *(mAux + kAuxMiniUartLineStat) & kUART1XmitIdle ) );
+		// wait for time to  send next frame
+		while ( *(mTimer + kTimerCLO) < mNextFrameTime );
 	}
 }
 
@@ -138,6 +68,8 @@ void sendPixel ( struct sPixel *pixel )
 void sendFrame ()
 {
 	//perror("sendFrame");
+	int screenWidth = 128;
+	int screenHeight = 8;
 	int n;
 	for (n = 0; n < screenWidth*screenHeight; n++)
 	{

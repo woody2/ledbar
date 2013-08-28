@@ -28,37 +28,11 @@
 #define PAGE_SIZE       0x1000  // 4K
 #define BLOCK_SIZE      0x1000  // 4K
 
-enum eStates {
-	kStateInvalid,
-	kStateUninitialised,
-	kStateIdle,
-	kStateSendFrame,
-	kStateSendingFrame,
-	kStateSentFrame,
-	kStateExit
-};
-
-
-/********************************************\
-*  Forward Declarations                      *
-\********************************************/
-
-void processState ();
-void changeState ();
-void printState ();
 
 void sendPixel ( struct sPixel *pixel );
 void sendFrame ();
 
-/********************************************\
-*  Global Variables                          *
-\********************************************/
-
-enum eStates mState;
-
 unsigned long mNextFrameTime;
-int screenWidth;
-int screenHeight;
 
 
 #endif
