@@ -9,6 +9,7 @@
 #include "image_element.h"
 
 #define RESET_BYTE 1
+#define FRAME_INTERVALL 40000
 
 
 /********************************************\
@@ -29,9 +30,7 @@ int main(int argc, char **argv) {
 		gpioBit ( kGPIODirectionPort, kFromPi );
 		sendFrame();
 		WaitForSendingToComplete();
-		// wait for time to  send next frame
-
-		Wait(40000);
+		Wait(FRAME_INTERVALL);
 	}
 }
 
