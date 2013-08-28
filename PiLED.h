@@ -28,11 +28,6 @@
 #define PAGE_SIZE       0x1000  // 4K
 #define BLOCK_SIZE      0x1000  // 4K
 
-enum eBufferDirection {
-	kBufferWriting        = 0,
-	kBufferReading        = 1
-};
-
 enum eStates {
 	kStateInvalid,
 	kStateUninitialised,
@@ -51,38 +46,19 @@ enum eStates {
 void processState ();
 void changeState ();
 void printState ();
-void triggerScope ();
-void gpioBit ( char bit, char val );
-void sendByte ( unsigned char byte );
-//volatile unsigned long *mapMem ( unsigned long armAddr, unsigned int memSize );
 
 void sendPixel ( struct sPixel *pixel );
 void sendFrame ();
-
-void initScreen();
-void initImageElements();
 
 /********************************************\
 *  Global Variables                          *
 \********************************************/
 
-volatile unsigned long *mSetAddr;
-volatile unsigned long *mClrAddr;
 enum eStates mState;
 
-struct sPixel *mScreenMatrix;
-short *mPixelMap;
+unsigned long mNextFrameTime;
 int screenWidth;
 int screenHeight;
-unsigned long mNextFrameTime;
-int mTestCounter;
-
-struct sPixel *mMergePixel;
-struct image_element *imgA;
-struct image_element *imgB;
-
-short opacity;
-int frameCount;
 
 
 #endif

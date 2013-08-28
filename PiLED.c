@@ -8,6 +8,8 @@
 #include "pixelmapping.h"
 #include "image_element.h"
 
+#define RESET_BYTE 1
+
 
 /********************************************\
 *  MAIN                                      *
@@ -33,26 +35,20 @@ void initGlobals()
 	enum eStates mState = kStateInvalid;
 	screenWidth = 128;
 	screenHeight = 8;
-	opacity = 100;
 }
 
 void processState() {
 	switch ( mState ) {
 
 	case kStateUninitialised:
+		perror("init started");
 		initRealTime();
 		initGPIO();
 		initUART();
 		initTimer();
-		perror("globals");
 		initGlobals();
-		perror("imgs");
-                initImageElements();
-		perror("screen");
-		initScreen();
-		perror("afterscreen");
+		perror("init complete");
 		sendByte(1);
-		frameCount = 0;
 		mNextFrameTime = *(mTimer + kTimerCLO) + 40000;
 		perror("EndOfInit");
 		break;
@@ -66,7 +62,6 @@ void processState() {
 	case kStateSentFrame:
 		//gpioBit ( kGPIODirectionPort, kToPi );
 		//perror("sent");
-		frameCount++;
 		mNextFrameTime = *(mTimer + kTimerCLO) + 40000;
 		break;
 	}
@@ -103,11 +98,6 @@ void changeState() {
 		break;
 
 	case kStateIdle:
-		//perror("lol");
-		imgA->update(imgA, frameCount);
-		//perror("lol2");
-		imgB->update(imgB, frameCount);
-		//perror("lol3");
 		// Time to send next Frame?
 		if ( *(mTimer + kTimerCLO) > mNextFrameTime ) {
 			mState = kStateSendFrame;
@@ -134,23 +124,15 @@ int initRealTime() {
 
 void sendPixel ( struct sPixel *pixel )
 {
-	if(pixel->red == 1)
-		pixel->red = 2;
+	if(pixel->red == RESET_BYTE)
+		pixel->red = RESET_BYTE + 1;
 	sendByte(pixel->red);
-	if(pixel->green == 1)
-		pixel->green = 2;
+	if(pixel->green == RESET_BYTE)
+		pixel->green = RESET_BYTE + 1;
 	sendByte(pixel->green);
-	if(pixel->blue == 1)
-		pixel->blue = 2;
+	if(pixel->blue == RESET_BYTE)
+		pixel->blue = RESET_BYTE + 1;
 	sendByte(pixel->blue);
-}
-
-struct sPixel *mergePixel(struct sPixel p1, struct sPixel p2, short opacity)
-{
-	mMergePixel->red = (p1.red * opacity / 100) + (p2.red * (100-opacity) / 100);
-	mMergePixel->green = (p1.green * opacity / 100) + (p2.green * (100-opacity) / 100);
-	mMergePixel->blue = (p1.blue * opacity / 100) + (p2.blue * (100-opacity) / 100);
-	return mMergePixel;
 }
 
 void sendFrame ()
@@ -159,37 +141,15 @@ void sendFrame ()
 	int n;
 	for (n = 0; n < screenWidth*screenHeight; n++)
 	{
-		//sendPixel(mergePixel(redPixel, bluePixel, opacity));
-		sendPixel(mergePixel(imgA->PixelMatrix[mPixelMap[n]], 
-			imgB->PixelMatrix[mPixelMap[n]],
-			opacity));
+		struct sPixel pixel;
+		pixel.red   =0;
+		pixel.green =255;
+		pixel.blue  =0;
+
+		sendPixel(&pixel);
 	}
-	//Send Reset byte:
-	sendByte(1);
+
+	sendByte(RESET_BYTE);
 }
 
-void initScreen()
-{	
-	mMergePixel = (struct sPixel*)malloc(sizeof(struct sPixel));
-	imgA->init(imgA);
-	imgB->init(imgB);
-	mPixelMap = GayBarMap;
-}
 
-void initImageElements()
-{
-	imgA = (struct image_element*)malloc(sizeof(struct 
-image_element));
-
-	struct sPixel greenPixel;
-	greenPixel.red = 0;
-	greenPixel.green = 255;
-	greenPixel.blue = 0;
-
-	imgB = (struct image_element*)malloc(sizeof(struct image_element));
-	imgB->colors = (struct sPixel*)malloc(sizeof(struct sPixel));
-	imgB->colors[0] = greenPixel;
-	imgB->init = &init_test;
-	imgB->update = &update_test;
-	//perror("lol");
-}
