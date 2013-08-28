@@ -30,3 +30,7 @@ void sendByte ( unsigned char byte )
 	// Write the character
 	*(mAux + kAuxMiniUartIO) = byte;
 }
+
+void WaitForSendingToComplete(){
+	while ( !( *(mAux + kAuxMiniUartLineStat) & kUART1XmitIdle ) );
+}

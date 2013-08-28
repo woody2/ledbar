@@ -13,5 +13,10 @@ enum kTimerWordOffsets {
 };
 
 volatile unsigned long *mTimer;
+int mLastResetTime;
 
 void initTimer();
+
+void ResetStartTime();
+
+void Wait(int elapsedtime);

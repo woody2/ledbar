@@ -63,3 +63,5 @@ volatile unsigned long *mAux;
 int initUART();
 
 void sendByte ( unsigned char byte );
+
+void WaitForSendingToComplete();

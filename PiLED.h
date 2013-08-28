@@ -32,7 +32,4 @@
 void sendPixel ( struct sPixel *pixel );
 void sendFrame ();
 
-unsigned long mNextFrameTime;
-
-
 #endif
