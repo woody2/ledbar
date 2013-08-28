@@ -25,12 +25,46 @@ int main(int argc, char **argv) {
 	initTimer();
 	perror("init complete");
 	sendByte(RESET_BYTE);
-	while ( 1 ) {
-		ResetStartTime();
-		gpioBit ( kGPIODirectionPort, kFromPi );
-		sendFrame();
-		WaitForSendingToComplete();
-		Wait(FRAME_INTERVALL);
+
+
+	FILE *f;
+
+	f = fopen("test.ledbar", "rb");
+	if (f)
+	{
+		unsigned char width;
+		unsigned char height;
+	    	fread(&width, 1, 1, f);
+	    	fread(&height, 1, 1, f);
+		int bufferSize = width * height * 3;
+		unsigned char data[bufferSize];
+		while (1)
+		{
+			while(1)
+			{
+				ResetStartTime();
+				gpioBit ( kGPIODirectionPort, kFromPi );
+			    	size_t bytesread = fread(&data, 1, bufferSize, f);
+				if (bytesread < bufferSize)
+					break;
+
+				int byteIxToSend;
+				for (byteIxToSend = 0; byteIxToSend < bufferSize; byteIxToSend++)
+				{
+					unsigned char byteToSend = data[byteIxToSend];
+					if (byteToSend == RESET_BYTE)
+						byteToSend += 1;
+
+					sendByte(byteToSend);
+				}
+
+				sendByte(RESET_BYTE);
+
+				WaitForSendingToComplete();
+				Wait(FRAME_INTERVALL);
+			}
+			fseek ( f , 0 , SEEK_SET );
+		}
 	}
 }
 
