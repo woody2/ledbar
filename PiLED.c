@@ -24,7 +24,6 @@ int main(int argc, char **argv) {
 	initTimer();
 	perror("init complete");
 	sendByte(RESET_BYTE);
-
 	while ( 1 ) {
 		mNextFrameTime = *(mTimer + kTimerCLO) + 40000;
 		gpioBit ( kGPIODirectionPort, kFromPi );
@@ -32,6 +31,7 @@ int main(int argc, char **argv) {
 		// wait for sending to complete
 		while ( !( *(mAux + kAuxMiniUartLineStat) & kUART1XmitIdle ) );
 		// wait for time to  send next frame
+
 		while ( *(mTimer + kTimerCLO) < mNextFrameTime );
 	}
 }
